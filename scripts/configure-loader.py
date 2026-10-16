@@ -20,3 +20,9 @@ for name in ['revenge.bundle', 'manifest.json']:
     assert source.stat().st_size > 0, f'Empty bundle asset: {name}'
     shutil.copyfile(source, assets / name)
 print('Configured hosted updates and embedded fallback bundle')
+
+# Use the released Android SDK rather than the upstream development SDK.
+p = loader / 'gradle/libs.versions.toml'
+s = p.read_text()
+assert 'compileSdk = "37"' in s and 'androidxCore = "1.19.0"' in s
+p.write_text(s.replace('compileSdk = "37"', 'compileSdk = "36"').replace('targetSdk = "37"', 'targetSdk = "36"').replace('androidxCore = "1.19.0"', 'androidxCore = "1.17.0"'))

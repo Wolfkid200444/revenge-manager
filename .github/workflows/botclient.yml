@@ -69,7 +69,7 @@ jobs:
         with:
           packages: platform-tools
       - name: Install loader SDK
-        run: sdkmanager 'platforms;android-37' 'build-tools;37.0.0'
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - name: Build loader
         working-directory: runtime/loader
         run: ./gradlew :app:assembleDebug --no-daemon
@@ -108,8 +108,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release view runtime-latest >/dev/null 2>&1 || gh release create runtime-latest --prerelease --title 'BotClient runtime' --notes 'Hosted bundle and embedded loader. Bot login is not implemented yet.'
-          gh release edit runtime-latest --notes "Bundle source: ${{ needs.check.outputs.bundle }}"
           gh release upload runtime-latest runtime/bundle/dist/revenge.bundle runtime/bundle/dist/manifest.json runtime/loader/app/build/outputs/apk/debug/app-debug.apk --clobber
+          gh release edit runtime-latest --notes "Bundle source: ${{ needs.check.outputs.bundle }}"
       - name: Publish manager
         env:
           GH_TOKEN: ${{ github.token }}

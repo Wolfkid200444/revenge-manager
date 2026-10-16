@@ -115,7 +115,7 @@ class LogViewerScreen(
                     mutableStateOf(false)
                 }
 
-                IconButton(onClick = { saveFile.launch("${BuildConfig.MOD_NAME}-Manager-${System.currentTimeMillis()}.log") }) {
+                IconButton(onClick = { saveFile.launch("${BuildConfig.MANAGER_NAME}-${System.currentTimeMillis()}.log") }) {
                     Icon(
                         imageVector = Icons.Outlined.Save,
                         contentDescription = stringResource(R.string.action_save_logs)

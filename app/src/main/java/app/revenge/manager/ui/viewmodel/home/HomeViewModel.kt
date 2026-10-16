@@ -27,7 +27,6 @@ import app.revenge.manager.installer.shizuku.ShizukuPermissions
 import app.revenge.manager.network.dto.Release
 import app.revenge.manager.network.utils.CommitsPagingSource
 import app.revenge.manager.network.utils.dataOrNull
-import app.revenge.manager.network.utils.ifSuccessful
 import app.revenge.manager.utils.DiscordVersion
 import app.revenge.manager.utils.isMiui
 import app.revenge.manager.utils.showToast
@@ -115,18 +114,12 @@ class HomeViewModel(
 
     private fun checkForUpdate() {
         screenModelScope.launch {
-            release = repo.getLatestRelease("revenge-mod/revenge-manager").dataOrNull
+            release = repo.getLatestRelease("Wolfkid200444/revenge-manager").dataOrNull
             release?.let {
                 updateDownloadUrl = it.assets.firstOrNull { asset -> asset.name.endsWith(".apk") }?.browserDownloadUrl
                 showUpdateDialog = it.tagName.removePrefix("v") != BuildConfig.VERSION_NAME
             }
-            repo.getLatestRelease("revenge-mod/revenge-xposed").ifSuccessful {
-                if (prefs.moduleVersion != it.tagName) {
-                    prefs.moduleVersion = it.tagName
-                    val module = File(cacheDir, "xposed.apk")
-                    if (module.exists()) module.delete()
-                }
-            }
+
         }
     }
 

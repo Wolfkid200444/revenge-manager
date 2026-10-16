@@ -1,0 +1,87 @@
+name: Build and publish BotClient
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+concurrency:
+  group: botclient-publish
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: Wolfkid200444/revenge-bundle-next
+          ref: main
+          path: runtime/bundle
+      - uses: actions/checkout@v4
+        with:
+          repository: revenge-mod/revenge-xposed
+          ref: 24fdc39d57f9b0954375b2efe28ff72ea14bf212
+          path: runtime/loader
+      - uses: denoland/setup-deno@v2
+      - name: Build bundle
+        working-directory: runtime/bundle
+        run: |
+          deno install --frozen
+          deno run build
+      - name: Configure loader and embed bundle
+        run: python3 scripts/configure-loader.py runtime/loader runtime/bundle/dist
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: android-actions/setup-android@v3
+      - name: Install loader SDK
+        run: sdkmanager 'platforms;android-37' 'build-tools;37.0.0'
+      - name: Build loader
+        working-directory: runtime/loader
+        run: ./gradlew :app:assembleDebug --no-daemon
+      - name: Embed loader in manager
+        run: |
+          mkdir -p app/src/main/assets
+          cp runtime/loader/app/build/outputs/apk/debug/app-debug.apk app/src/main/assets/botclient-loader.apk
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install manager SDK
+        run: sdkmanager 'platforms;android-34' 'build-tools;34.0.0'
+      - name: Restore signing key
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+        run: |
+          if [ -n "$KEYSTORE" ]; then
+            printf '%s' "$KEYSTORE" | base64 --decode > app/keystore.jks
+          fi
+      - name: Build manager
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ENTRY_ALIAS: ${{ secrets.KEYSTORE_ENTRY_ALIAS }}
+          KEYSTORE_ENTRY_PASSWORD: ${{ secrets.KEYSTORE_ENTRY_PASSWORD }}
+        run: ./gradlew :app:assembleRelease --no-daemon --console=plain
+      - name: Collect APK
+        run: |
+          mkdir -p dist
+          cp app/build/outputs/apk/release/*.apk dist/BotClientManager.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BotClientManager
+          path: dist/BotClientManager.apk
+      - name: Publish runtime
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view runtime-latest >/dev/null 2>&1 || gh release create runtime-latest --prerelease --title 'BotClient runtime' --notes 'Hosted bundle and embedded loader. Bot login is not implemented yet.'
+          gh release upload runtime-latest runtime/bundle/dist/revenge.bundle runtime/bundle/dist/manifest.json runtime/loader/app/build/outputs/apk/debug/app-debug.apk --clobber
+      - name: Publish manager
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="botclient-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" dist/BotClientManager.apk --title "BotClient Manager build ${GITHUB_RUN_NUMBER}" --notes 'Installs Discord with an embedded Revenge Next loader and bundle. Bundle updates load from the runtime-latest release on restart. Bot login is not implemented yet.'

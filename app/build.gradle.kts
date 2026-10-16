@@ -14,19 +14,19 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "app.revenge.manager"
+        applicationId = "com.wolfkid.botclient.manager"
         minSdk = 28
         targetSdk = 34
         versionName = version.toString()
         versionCode = versionName!!.removePrefix("v").split("-").first().replace(".", "").toInt()
 
 
-        buildConfigField("String", "MOD_NAME", "\"Revenge\"")
-        buildConfigField("String", "MANAGER_NAME", "\"RevengeManager\"")
-        buildConfigField("String", "REPO", "\"revenge-mod/bundle\"")
-        buildConfigField("String", "ORG_LINK", "\"https://github.com/revenge-mod\"")
+        buildConfigField("String", "MOD_NAME", "\"BotClient\"")
+        buildConfigField("String", "MANAGER_NAME", "\"BotClientManager\"")
+        buildConfigField("String", "REPO", "\"Wolfkid200444/revenge-bundle-next\"")
+        buildConfigField("String", "ORG_LINK", "\"https://github.com/Wolfkid200444/revenge-manager\"")
         buildConfigField("String", "INVITE_LINK", "\"https://discord.gg/ddcQf3s2Uq\"")
-        buildConfigField("String", "MODDED_APP_PACKAGE_NAME", "\"app.revenge\"")
+        buildConfigField("String", "MODDED_APP_PACKAGE_NAME", "\"com.wolfkid.botclient\"")
         buildConfigField("int", "MODDED_APP_ICON", "0xFEB23A42")
         buildConfigField("int", "MODDED_APP_ICON_ALPHA", "0xFFFBB33C")
         buildConfigField("int", "MODDED_APP_ICON_OTHER", "0xFFD3575E")

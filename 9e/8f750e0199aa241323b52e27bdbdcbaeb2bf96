@@ -1,0 +1,19 @@
+.github/workflows/botclient.yml
+  s_a3a2f53d8e5d45::t_ba20d6c0111c29 4-5,14-33,35-36,44,90-91,111
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9e8f750e0199aa241323b52e27bdbdcbaeb2bf96",
+  "prompts": {},
+  "sessions": {
+    "s_a3a2f53d8e5d45": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a146e6-fd76-7e10-b998-706740683102",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Wolfkid200444 <32025746+Wolfkid200444@users.noreply.github.com>"
+    }
+  }
+}

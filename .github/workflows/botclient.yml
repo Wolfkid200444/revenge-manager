@@ -27,6 +27,11 @@ jobs:
       - uses: denoland/setup-deno@v2
       - name: Build bundle
         working-directory: runtime/bundle
+        env:
+          REVENGE_DISCORD_SERVER_URL: https://discord.gg/ddcQf3s2Uq
+          REVENGE_SOURCE_REPOSITORY_URL: https://github.com/Wolfkid200444/revenge-bundle-next
+          REVENGE_LICENSE_URL: https://github.com/Wolfkid200444/revenge-bundle-next/blob/main/LICENSE
+          REVENGE_DEFAULT_PLUGIN_REPOSITORY_URL: https://revenge-mod.github.io/revenge-community-plugins
         run: |
           deno install --frozen
           deno run build
@@ -64,7 +69,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEYSTORE_ENTRY_ALIAS: ${{ secrets.KEYSTORE_ENTRY_ALIAS }}
           KEYSTORE_ENTRY_PASSWORD: ${{ secrets.KEYSTORE_ENTRY_PASSWORD }}
-        run: ./gradlew :app:assembleRelease --no-daemon --console=plain
+        run: ./gradlew :app:assembleRelease -Pversion="0.1.${GITHUB_RUN_NUMBER}" --no-daemon --console=plain
       - name: Collect APK
         run: |
           mkdir -p dist
@@ -83,5 +88,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          tag="botclient-${GITHUB_RUN_NUMBER}"
+          tag="v0.1.${GITHUB_RUN_NUMBER}"
           gh release create "$tag" dist/BotClientManager.apk --title "BotClient Manager build ${GITHUB_RUN_NUMBER}" --notes 'Installs Discord with an embedded Revenge Next loader and bundle. Bundle updates load from the runtime-latest release on restart. Bot login is not implemented yet.'
